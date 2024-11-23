@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опросник AI-помощника</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="survey_ai_style.css">
+</head>
+<body>
+    <div class="survey-container">
+        <h2>Опросник</h2>
+        <form action="">
+            <!-- БЛОК №1. Задачи -->
+            <h3>БЛОК №1. Задачи</h3>
+            <label for="strategy">
+                1. Есть ли у вашей компании оформленная стратегия? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="strategy" name="strategy" required>
+
+            <label for="task_setting">
+                2. Каким образом вы сейчас ставите задачи своим сотрудникам/контролируете их исполнение? 
+                (Ожидаемые ответы: звоню, ставлю на совещании/личной встрече, пишу в мессенджере, есть специальное ПО, никак)
+            </label>
+            <input type="text" id="task_setting" name="task_setting" required>
+
+            <label for="overdue">
+                3. Какой процент задач попадает в категорию просроченных? (Ожидаемые ответы: 10%, 20%...100%)
+            </label>
+            <input type="text" id="overdue" name="overdue" required>
+
+            <label for="meeting_protocol">
+                4. Ведете ли вы протокол совещания? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="meeting_protocol" name="meeting_protocol" required>
+
+            <label for="protocol_to_task">
+                5. Как пункты протокола превращаются в задачи для сотрудников? 
+                (Ожидаемые ответы: секретарь рассылает в протокол, сразу на совещании заносим в автоматизированный задачник, 
+                рассылаем по электронной почте, сотрудники сами записывают на совещании, никак)
+            </label>
+            <input type="text" id="protocol_to_task" name="protocol_to_task" required>
+
+                        <!-- БЛОК №2. Люди -->
+            <h3>БЛОК №2. Люди</h3>
+            <label for="job_portrait">
+                6. Есть ли у вас четкий портрет каждой должности? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="job_portrait" name="job_portrait" required>
+
+            <label for="instructions">
+                7. Есть ли у ваших сотрудников должностные инструкции? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="instructions" name="instructions" required>
+
+            <label for="full_efficiency">
+                8. Через какое время вы можете сказать, что сотрудник начинает работать на 100%? 
+                (Ожидаемые ответы: "менее 1 месяца, через месяц, через 2 месяца", "более трех месяцев")
+            </label>
+            <input type="text" id="full_efficiency" name="full_efficiency" required>
+
+            <label for="mentorship">
+                9. Есть ли на предприятии система наставничества? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="mentorship" name="mentorship" required>
+
+            <label for="training">
+                10. Есть ли на предприятии система обучения сотрудников? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="training" name="training" required>
+
+            <!-- БЛОК №3. Система стимулирования -->
+            <h3>БЛОК №3. Система стимулирования</h3>
+            <label for="payment">
+                11. Есть ли на предприятии положение об оплате труда? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="payment" name="payment" required>
+
+            <label for="stimulation_methods">
+                12. Есть ли еще какие-то методы стимулирования (помимо оплаты труда) на предприятии? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="stimulation_methods" name="stimulation_methods" required>
+
+            <label for="visual_stimulation">
+                13. Визуализирована ли ваша система стимулирования? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="visual_stimulation" name="visual_stimulation" required>
+
+            <label for="corporate_culture">
+                14. Описана ли в каком-либо документе ваша организационная/корпоративная культура? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="corporate_culture" name="corporate_culture" required>
+
+            <label for="roles">
+                15. Четко ли ваши сотрудники представляют свой функционал, цель и задачи компании, перспективы карьерного роста? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="roles" name="roles" required>
+
+            <!-- БЛОК №4. Бизнес-процессы -->
+            <h3>БЛОК №4. Бизнес-процессы</h3>
+            <label for="business_processes">
+                16. Описаны ли бизнес-процессы в вашей компании? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="business_processes" name="business_processes" required>
+
+            <label for="responsible_employee">
+                17. Есть ли на предприятии сотрудник, отвечающий за описание и реорганизацию бизнес-процессов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="responsible_employee" name="responsible_employee" required>
+
+            <label for="software_use">
+                18. Используется ли специальное ПО для реорганизации бизнес-процессов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="software_use" name="software_use" required>
+
+            <label for="regulations">
+                19. Есть ли у вас на предприятии система регламентов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="regulations" name="regulations" required>
+
+            <label for="quality_control">
+                20. Осуществляете ли контроль качества исполнения бизнес-процессов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="quality_control" name="quality_control" required>
+
+            <!-- БЛОК №5. Организационная структура -->
+            <h3>БЛОК №5. Организационная структура</h3>
+            <label for="org_structure">
+                21. Назовите тип организационной структуры в вашей компании. 
+                (Ожидаемые ответы: Линейно-функциональная, дивизиональная, матричная, проектная, другая, затрудняюсь ответить)
+            </label>
+            <input type="text" id="org_structure" name="org_structure" required>
+
+            <label for="structure_visual">
+                22. Организационная структура визуализирована? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="structure_visual" name="structure_visual" required>
+
+            <label for="hierarchy">
+                23. Сотрудник может ознакомиться с оргструктурой и понять свое место в ней? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="hierarchy" name="hierarchy" required>
+
+            <label for="roles_knowledge">
+                24. Сотрудник может узнать функционал других сотрудников? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="roles_knowledge" name="roles_knowledge" required>
+
+            <label for="cross_tasks">
+                25. Сотрудники разных подразделений могут ставить задачи друг другу? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="cross_tasks" name="cross_tasks" required>
+
+            <button type="submit">Отправить</button>
+        </form>
+
+        
+        <!-- Вывод результатов -->
+        <div id="results" class="results">
+            <h3>Результаты по каждому блоку</h3>
+            <p id="block1-result">Блок 1 (Задачи): </p>
+            <p id="block2-result">Блок 2 (Люди): </p>
+            <p id="block3-result">Блок 3 (Система стимулирования): </p>
+            <p id="block4-result">Блок 4 (Бизнес-процессы): </p>
+            <p id="block5-result">Блок 5 (Организационная структура): </p>
+        </div>
+
+        <!-- Канвас для радарного графика -->
+        <div id="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <!-- Вывод рекомендаций -->
+        <div id="recommendations" class="recommendations" style="display: none;">
+            <h3>Рекомендации:</h3>
+            <ul id="recommendation-list"></ul>
+        </div>        
+    </div>
+    <script src="survey_ai_script.js"></script>
+</body>
+</html>
