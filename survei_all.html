@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Опросник AI-помощника</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .survey-container {
+            background-color: #ffffff;
+            padding: 30px;
+            margin: 0 auto !important;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            color: #444;
+            margin-top: 30px;
+            border-bottom: 2px solid #88BEFF;
+            padding-bottom: 5px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: #88BEFF;
+            outline: none;
+            box-shadow: 0 0 5px rgba(136, 190, 255, 0.5);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        button[type="submit"] {
+            background-color: #88BEFF;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #66A3FF;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4ff;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .results p {
+            font-size: 16px;
+            color: #444;
+            margin: 5px 0;
+        }
+        
+        #chart-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        /* Добавляем стиль для canvas */
+        canvas#radarChart {
+            width: 400px;
+            height: 400px;
+        }
+        
+        #recommendations {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        #recommendations h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        #recommendation-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #recommendation-list li {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #ffffff;
+            border-left: 4px solid #88BEFF;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            font-size: 16px;
+            line-height: 1.5;
+            color: #444;
+        }
+        
+        #recommendation-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        @media (max-width: 600px) {
+            .survey-container {
+                padding: 20px;
+            }
+        
+            h2 {
+                font-size: 1.5em;
+            }
+        
+            form {
+                gap: 10px;
+            }
+        
+            button[type="submit"] {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="survey-container">
+        <h2>Опросник</h2>
+        <form action="">
+            <!-- БЛОК №1. Задачи -->
+            <h3>БЛОК №1. Задачи</h3>
+            <label for="strategy">
+                1. Есть ли у вашей компании оформленная стратегия? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="strategy" name="strategy" required>
+
+            <label for="task_setting">
+                2. Каким образом вы сейчас ставите задачи своим сотрудникам/контролируете их исполнение? 
+                (Ожидаемые ответы: звоню, ставлю на совещании/личной встрече, пишу в мессенджере, есть специальное ПО, никак)
+            </label>
+            <input type="text" id="task_setting" name="task_setting" required>
+
+            <label for="overdue">
+                3. Какой процент задач попадает в категорию просроченных? (Ожидаемые ответы: 10%, 20%...100%)
+            </label>
+            <input type="text" id="overdue" name="overdue" required>
+
+            <label for="meeting_protocol">
+                4. Ведете ли вы протокол совещания? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="meeting_protocol" name="meeting_protocol" required>
+
+            <label for="protocol_to_task">
+                5. Как пункты протокола превращаются в задачи для сотрудников? 
+                (Ожидаемые ответы: секретарь рассылает в протокол, сразу на совещании заносим в автоматизированный задачник, 
+                рассылаем по электронной почте, сотрудники сами записывают на совещании, никак)
+            </label>
+            <input type="text" id="protocol_to_task" name="protocol_to_task" required>
+
+                        <!-- БЛОК №2. Люди -->
+            <h3>БЛОК №2. Люди</h3>
+            <label for="job_portrait">
+                6. Есть ли у вас четкий портрет каждой должности? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="job_portrait" name="job_portrait" required>
+
+            <label for="instructions">
+                7. Есть ли у ваших сотрудников должностные инструкции? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="instructions" name="instructions" required>
+
+            <label for="full_efficiency">
+                8. Через какое время вы можете сказать, что сотрудник начинает работать на 100%? 
+                (Ожидаемые ответы: "менее 1 месяца, через месяц, через 2 месяца", "более трех месяцев")
+            </label>
+            <input type="text" id="full_efficiency" name="full_efficiency" required>
+
+            <label for="mentorship">
+                9. Есть ли на предприятии система наставничества? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="mentorship" name="mentorship" required>
+
+            <label for="training">
+                10. Есть ли на предприятии система обучения сотрудников? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="training" name="training" required>
+
+            <!-- БЛОК №3. Система стимулирования -->
+            <h3>БЛОК №3. Система стимулирования</h3>
+            <label for="payment">
+                11. Есть ли на предприятии положение об оплате труда? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="payment" name="payment" required>
+
+            <label for="stimulation_methods">
+                12. Есть ли еще какие-то методы стимулирования (помимо оплаты труда) на предприятии? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="stimulation_methods" name="stimulation_methods" required>
+
+            <label for="visual_stimulation">
+                13. Визуализирована ли ваша система стимулирования? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="visual_stimulation" name="visual_stimulation" required>
+
+            <label for="corporate_culture">
+                14. Описана ли в каком-либо документе ваша организационная/корпоративная культура? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="corporate_culture" name="corporate_culture" required>
+
+            <label for="roles">
+                15. Четко ли ваши сотрудники представляют свой функционал, цель и задачи компании, перспективы карьерного роста? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="roles" name="roles" required>
+
+            <!-- БЛОК №4. Бизнес-процессы -->
+            <h3>БЛОК №4. Бизнес-процессы</h3>
+            <label for="business_processes">
+                16. Описаны ли бизнес-процессы в вашей компании? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="business_processes" name="business_processes" required>
+
+            <label for="responsible_employee">
+                17. Есть ли на предприятии сотрудник, отвечающий за описание и реорганизацию бизнес-процессов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="responsible_employee" name="responsible_employee" required>
+
+            <label for="software_use">
+                18. Используется ли специальное ПО для реорганизации бизнес-процессов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="software_use" name="software_use" required>
+
+            <label for="regulations">
+                19. Есть ли у вас на предприятии система регламентов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="regulations" name="regulations" required>
+
+            <label for="quality_control">
+                20. Осуществляете ли контроль качества исполнения бизнес-процессов? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="quality_control" name="quality_control" required>
+
+            <!-- БЛОК №5. Организационная структура -->
+            <h3>БЛОК №5. Организационная структура</h3>
+            <label for="org_structure">
+                21. Назовите тип организационной структуры в вашей компании. 
+                (Ожидаемые ответы: Линейно-функциональная, дивизиональная, матричная, проектная, другая, затрудняюсь ответить)
+            </label>
+            <input type="text" id="org_structure" name="org_structure" required>
+
+            <label for="structure_visual">
+                22. Организационная структура визуализирована? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="structure_visual" name="structure_visual" required>
+
+            <label for="hierarchy">
+                23. Сотрудник может ознакомиться с оргструктурой и понять свое место в ней? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="hierarchy" name="hierarchy" required>
+
+            <label for="roles_knowledge">
+                24. Сотрудник может узнать функционал других сотрудников? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="roles_knowledge" name="roles_knowledge" required>
+
+            <label for="cross_tasks">
+                25. Сотрудники разных подразделений могут ставить задачи друг другу? (Ожидаемые ответы: да/нет)
+            </label>
+            <input type="text" id="cross_tasks" name="cross_tasks" required>
+
+            <button type="submit">Отправить</button>
+        </form>
+
+        
+        <!-- Вывод результатов -->
+        <div id="results" class="results">
+            <h3>Результаты по каждому блоку</h3>
+            <p id="block1-result">Блок 1 (Задачи): </p>
+            <p id="block2-result">Блок 2 (Люди): </p>
+            <p id="block3-result">Блок 3 (Система стимулирования): </p>
+            <p id="block4-result">Блок 4 (Бизнес-процессы): </p>
+            <p id="block5-result">Блок 5 (Организационная структура): </p>
+        </div>
+
+        <!-- Канвас для радарного графика -->
+        <div id="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <!-- Вывод рекомендаций -->
+        <div id="recommendations" class="recommendations" style="display: none;">
+            <h3>Рекомендации:</h3>
+            <ul id="recommendation-list"></ul>
+        </div>        
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const recommendations = document.getElementById('recommendations');
+            const recommendationsList = document.getElementById('recommendation-list');
+
+            // Элементы для отображения результатов по каждому блоку
+            const block1Result = document.getElementById('block1-result');
+            const block2Result = document.getElementById('block2-result');
+            const block3Result = document.getElementById('block3-result');
+            const block4Result = document.getElementById('block4-result');
+            const block5Result = document.getElementById('block5-result');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                recommendationsList.innerHTML = ''; // Очищаем предыдущие рекомендации
+                recommendations.style.display = 'none'; // Скрываем рекомендации до успешной обработки
+
+                try {
+                    // Логика блока 1
+                    const block1Sum = getBlockSum(form, [
+                        {
+                            id: 'strategy',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Сразу же сформировать стратегию компании бывает непросто. Рекомендуем начать с формирования бизнес-цели на ближайший финансовый год. Шаблон доступен по ссылке.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'task_setting',
+                            validAnswers: ['звоню', 'ставлю на совещании/личной встрече', 'пишу в мессенджере', 'есть специальное ПО', 'никак'],
+                            recommendation: `Уверены, что задачи вы все-таки ставите, но, возможно, делаете это не системно и с использованием нескольких информационных каналов. Необходимо определиться с каналом информирования сотрудников и помимо формулировки самой задачи, использовать еще несколько критериев, в т.ч. сроки, ответственного, результат. Подробнее см. по ссылке. Использование специальных информационных продуктов позволяет не только быстро доносить новую задачу до подчиненных, но и контролировать ее исполнение.`,
+                            scoreMap: { 'звоню': 1, 'ставлю на совещании/личной встрече': 1, 'пишу в мессенджере': 1, 'есть специальное ПО': 1, 'никак': 0 }
+                        },
+                        {
+                            id: 'overdue',
+                            validAnswers: ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'],
+                            recommendation: `Работа с просроченными задачами занимает очень значительную часть операционной деятельности любого руководителя. Чтобы снизить это время необходимо не только четко ставить задачу, но и указывать ее сроки и результат, который вы хотите достичь, а также регулярно проводить контрольные мероприятия. Легче всего это осуществлять в программном продукте.`,
+                            scoreMap: (val) => parseInt(val, 10) >= 50 ? 1 : 0
+                        },
+                        {
+                            id: 'meeting_protocol',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Проведение совещания без протокола снижает эффективность данного мероприятия в несколько раз. Вести протокол совсем несложно. Для этого есть специальные шаблоны и несколько простых правил.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'protocol_to_task',
+                            validAnswers: ['секретарь рассылает в протокол', 'сразу на совещании заносим в автоматизированный задачник', 'рассылаем по электронной почте', 'сотрудники сами записывают на совещании', 'никак'],
+                            recommendation: `Пункты протокола должны превращаться в задачи для ваших подчиненных оперативно и по возможности без вашего активного участия. Сделать это можно несколькими путями: 1) назначьте секретаря совещания и он (а), распределить задачи после совещания в ручном режиме; 2) работайте в информационном продукте и сразу же на совещании фиксируйте задачи.`,
+                            scoreMap: { 'секретарь рассылает в протокол': 1, 'сразу на совещании заносим в автоматизированный задачник': 1, 'рассылаем по электронной почте': 1, 'сотрудники сами записывают на совещании': 1, 'никак': 0 }
+                        }
+                    ]);
+
+                    // Логика блока 2
+                    const block2Sum = getBlockSum(form, [
+                        {
+                            id: 'job_portrait',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Портрет должности помогает более эффективно и оперативно осуществлять поиск сотрудников в случае открытия новых вакансий или их увольнения. Рекомендуем составить портреты ключевых должностей с использованием шаблона.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'instructions',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `"Лучший" способ составить должностную инструкцию - это скачать ее из Сети. Настоятельно не рекомендуем так поступать. Должностная инструкция должна быть подготовлена под конкретную должность на конкретном предприятии на конкретном этапе. Рекомендуем применять принцип "3+20" и использовать предлагаемый шаблон.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'full_efficiency',
+                            validAnswers: ['менее 1 месяца', 'через месяц', 'через 2 месяца', 'более трех месяцев'],
+                            recommendation: `Очень часто вновь нанятый сотрудник не сразу начинает приносить прибыль компании, т.е. выполнять свои должностные инструкции на 100%. Рекомендуем сократить период адаптации сотрудника до 1-2 месяцев. Один из лучших способов сокращения периода - это система наставничества, которая подразумевает составление адаптационного плана для каждого вновь приятого сотрудника. Заполните, пожалуйста, шаблоны по всем ключевым позициям.`,
+                            scoreMap: { 'менее 1 месяца': 1, 'через месяц': 1, 'через 2 месяца': 1, 'более трех месяцев': 0 }
+                        },
+                        {
+                            id: 'mentorship',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Система наставничества - важнейший элемент адаптации нового сотрудника. Помимо адаптационного плана (см. шаблоны), она подразумевает наставника из числа опытных сотрудников. Наставник, используя адаптационный план, сопровождает новичка в течение 1-2 месяцев. Как и всякая работа, труд наставника должен быть оплачен. Рекомендуем учесть данный факт в вашем Положении об оплате труда.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'training',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Система обучения сотрудников - важнейший элемент не только адаптации нового сотрудника, но и стимулирования действующих работников предприятия, а также важный инструмент повышения производительности труда. Рекомендуем составить концепцию и план обучения сотрудников, используя шаблон.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        }
+                    ]);
+
+                    // Логика блока 3
+                    const block3Sum = getBlockSum(form, [
+                        {
+                            id: 'payment',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Рекомендуем составить положение об оплате труда, используя прилагаемый шаблон. Данный документ не только основа системы стимулирования вашего сотрудника, но и требование трудового законодательства многих стран мира, в т.ч. Российской Федерации.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'stimulation_methods',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Оплата труда - это далеко не единственный способ стимулирования ваших сотрудников. Помимо материальных стимулов существует множество нематериальных. Рекомендуем составить проект системы стимулирования вашей компании, используя шаблон.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'visual_stimulation',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Положение об оплате труда и система стимулирования, действующая на предприятии, должны быть доступны каждому сотруднику компании. Рекомендуем визуализировать их, обсудить проекты данных документов с коллективом и разместить их на корпоративном портале.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'corporate_culture',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Корпоративная культура компании может стать полноценным активом любого предприятия. Рекомендуем визуализировать основные элементы вашей корпоративной культуры, используя прилагаемый шаблон.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'roles',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Четкое представление сотрудником своих должностных обязанностей, бизнес-цели и перспектив карьерного роста - это важные элементы системы стимулирования. Рекомендуем визуализировать данные элементы и ознакомить с ними ваших сотрудников.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        }
+                    ]);
+
+                    // Логика блока 4
+                    const block4Sum = getBlockSum(form, [
+                        {
+                            id: 'business_processes',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Описание бизнес-процессов необходимо, особенно если над одной задачей трудятся несколько человек. Рекомендуем начать работать с этим разделом, используя шаблон.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'responsible_employee',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Если у вас нет отдельного сотрудника, отвечающего за описание бизнес-процессов, распределите функционал среди топ-менеджеров компании.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'software_use',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Описать бизнес-процессы можно текстом, таблицей, но лучше использовать схемы и язык UML. Подробнее про UML читайте по ссылке.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'regulations',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `UML помогает создавать универсальные графические представления сложных процессов. Подробнее читайте по ссылке.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'quality_control',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Описанные бизнес-процессы формируют систему регламентов. Рекомендуем начать с перечня регламентов вашей организации.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        }
+                    ]);
+
+                    // Логика блока 5
+                    const block5Sum = getBlockSum(form, [
+                        {
+                            id: 'org_structure',
+                            validAnswers: ['линейно-функциональная', 'дивизиональная', 'матричная', 'проектная', 'другая', 'затрудняюсь ответить'],
+                            recommendation: `Рекомендуем выбрать подходящий тип организационной структуры и визуализировать ее.`,
+                            scoreMap: { 'линейно-функциональная': 1, 'дивизиональная': 1, 'матричная': 1, 'проектная': 1, 'другая': 1, 'затрудняюсь ответить': 0 }
+                        },
+                        {
+                            id: 'structure_visual',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Рекомендуем определиться с типом организационной структуры, визуализировать ее и проинформировать сотрудников.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'hierarchy',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Рекомендуем визуализировать вашу организационную структуру и проинформировать сотрудников.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'roles_knowledge',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Рекомендуем отразить систему подчиненности в вашей схеме и ознакомить коллектив с данной информацией.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        },
+                        {
+                            id: 'cross_tasks',
+                            validAnswers: ['да', 'нет'],
+                            recommendation: `Рекомендуем отразить взаимодействия сотрудников в организационной структуре компании.`,
+                            scoreMap: { 'да': 1, 'нет': 0 }
+                        }
+                    ]);
+
+                    // Обновление текста с результатами по каждому блоку
+                    block1Result.textContent = `Блок 1 (Задачи): ${block1Sum}`;
+                    block2Result.textContent = `Блок 2 (Люди): ${block2Sum}`;
+                    block3Result.textContent = `Блок 3 (Система стимулирования): ${block3Sum}`;
+                    block4Result.textContent = `Блок 4 (Бизнес-процессы): ${block4Sum}`;
+                    block5Result.textContent = `Блок 5 (Организационная структура): ${block5Sum}`;
+
+                    // Отображение рекомендаций и построение диаграммы
+                    recommendations.style.display = 'block';
+                    drawRadarChart([block1Sum, block2Sum, block3Sum, block4Sum, block5Sum]);
+                } catch (error) {
+                    console.error('Ошибка обработки формы:', error.message);
+                    alert('Пожалуйста, исправьте ошибки в ответах и попробуйте снова.');
+                }
+            });
+
+             // Функция для подсчёта баллов для блока
+             function getBlockSum(form, questions) {
+                return questions.reduce((sum, { id, validAnswers, recommendation, scoreMap }) => {
+                    const answer = form.querySelector(`#${id}`).value.trim().toLowerCase();
+                    let score = 0;
+
+                    if (validAnswers.map(ans => ans.toLowerCase()).includes(answer)) {
+                        score = typeof scoreMap === 'function' ? scoreMap(answer) : scoreMap[answer];
+                    } else {
+                        throw new Error(`Неверный ответ на вопрос "${id}". Пожалуйста, введите один из допустимых: ${validAnswers.join(', ')}`);
+                    }
+
+                    if (score === 0 && recommendation) {
+                        const recItem = document.createElement('li');
+                        recItem.textContent = recommendation;
+                        recommendationsList.appendChild(recItem);
+                    }
+
+                    return sum + score;
+                }, 0);
+            }
+
+            // Функция для построения диаграммы
+            window.drawRadarChart = function (data) {
+                const ctx = document.getElementById('radarChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['БЛОК №1. Задачи', 'БЛОК №2. Люди', 'БЛОК №3. Система стимулирования', 'БЛОК №4. Бизнес-процессы', 'БЛОК №5. Организационная структура'],
+                        datasets: [{
+                            label: 'Оценка блоков (0-5)',
+                            data,
+                            backgroundColor: 'rgba(136, 190, 255, 0.2)',
+                            borderColor: 'rgba(136, 190, 255, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: { r: { beginAtZero: true, max: 5 } }
+                    }
+                });
+            };
+        });
+    </script>
+</body>
+</html>
